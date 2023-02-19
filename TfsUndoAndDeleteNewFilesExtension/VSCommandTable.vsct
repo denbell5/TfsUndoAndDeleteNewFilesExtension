@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CommandTable xmlns="http://schemas.microsoft.com/VisualStudio/2005-10-18/CommandTable" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+	<Extern href="stdidcmd.h"/>
+	<Extern href="vsshlids.h"/>
+	<Include href="KnownImageIds.vsct"/>
+	<Include href="VSGlobals.vsct"/>
+
+	<Commands package="TfsUndoAndDeleteNewFilesExtension">
+		<Buttons>
+			<Button guid="TfsUndoAndDeleteNewFilesExtension" id="UndoAndDeleteNewFilesCommand" type="Button">
+				<Parent guid="guidHatPackageGrpSet" id="igrpPendingChangesPageUndoIncludedChanges"/>
+				<Strings>
+					<ButtonText>Undo and delete adds</ButtonText>
+					<LocCanonicalName>.TfsUndoAndDeleteNewFilesExtension.UndoAndDeleteNewFilesCommand</LocCanonicalName>
+				</Strings>
+			</Button>
+			<Button guid="TfsUndoAndDeleteNewFilesExtension" id="UndoAndDeleteNewFilesCommand" type="Button">
+				<Parent guid="guidHatPackageGrpSet" id="igrpPendingChangesPageUndoExcludedChanges"/>
+				<Strings>
+					<ButtonText>Undo and delete adds</ButtonText>
+					<LocCanonicalName>.TfsUndoAndDeleteNewFilesExtension.UndoAndDeleteNewFilesCommand</LocCanonicalName>
+				</Strings>
+			</Button>
+		</Buttons>
+	</Commands>
+
+	<Symbols>
+		<GuidSymbol name="TfsUndoAndDeleteNewFilesExtension" value="{21bf7b15-9ee3-4774-bb51-5b0a8a3b76ea}">
+			<IDSymbol name="UndoAndDeleteNewFilesCommand" value="0x0100" />
+		</GuidSymbol>
+		<GuidSymbol name="guidHatPackageGrpSet" value="{4f23bc3a-c823-4632-8a73-3bb5ad25fd5b}">
+			<IDSymbol name="igrpPendingChangesPageUndoIncludedChanges" value="0x2035" />
+			<IDSymbol name="igrpPendingChangesPageUndoExcludedChanges" value="0x2036" />
+		</GuidSymbol>
+	</Symbols>
+</CommandTable>

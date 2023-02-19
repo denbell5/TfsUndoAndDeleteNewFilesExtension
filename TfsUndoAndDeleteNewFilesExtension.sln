@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32014.148
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TfsUndoAndDeleteNewFilesExtension", "TfsUndoAndDeleteNewFilesExtension\TfsUndoAndDeleteNewFilesExtension.csproj", "{C08D75C1-B1B5-4FB6-9B55-F2B6348FACBA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C08D75C1-B1B5-4FB6-9B55-F2B6348FACBA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C08D75C1-B1B5-4FB6-9B55-F2B6348FACBA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C08D75C1-B1B5-4FB6-9B55-F2B6348FACBA}.Debug|x86.ActiveCfg = Debug|x86
+		{C08D75C1-B1B5-4FB6-9B55-F2B6348FACBA}.Debug|x86.Build.0 = Debug|x86
+		{C08D75C1-B1B5-4FB6-9B55-F2B6348FACBA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C08D75C1-B1B5-4FB6-9B55-F2B6348FACBA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C08D75C1-B1B5-4FB6-9B55-F2B6348FACBA}.Release|x86.ActiveCfg = Release|x86
+		{C08D75C1-B1B5-4FB6-9B55-F2B6348FACBA}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A75449F9-A8AC-4AA8-A992-F94942204413}
+	EndGlobalSection
+EndGlobal
