@@ -1,8 +1,10 @@
 ﻿using Microsoft.TeamFoundation.VersionControl.Client;
 using Microsoft.VisualStudio.TeamFoundation.VersionControl;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace TfsUndoAndDeleteNewFilesExtension
 {
@@ -37,7 +39,7 @@ namespace TfsUndoAndDeleteNewFilesExtension
             var pendingChangesAfter = GetPendingChangesOfTypeAdd();
             await LogAsync($"Found {pendingChangesAfter.Length} 'adds' after undo");
 
-            var undoneChanges = pendingChangesBefore.Except(pendingChangesAfter).ToArray();
+            var undoneChanges = ResolveUndoneChanges(pendingChangesBefore, pendingChangesAfter);
             await LogAsync($"Found {undoneChanges.Length} undone 'adds'");
 
             foreach (var pendingChange in undoneChanges)
@@ -90,6 +92,21 @@ namespace TfsUndoAndDeleteNewFilesExtension
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             EnvDTE.DTE dte = Microsoft.VisualStudio.Shell.Package.GetGlobalService(typeof(EnvDTE.DTE)) as EnvDTE.DTE;
             _versionControlExtension = dte.GetObject(typeof(VersionControlExt).FullName) as VersionControlExt;
+        }
+
+        private PendingChange[] ResolveUndoneChanges(PendingChange[] before, PendingChange[] after)
+        {
+            var undone = new List<PendingChange>();
+
+            foreach (var change in before)
+            {
+                if (!after.Any(x => x.LocalItem == change.LocalItem))
+                {
+                    undone.Add(change);
+                }
+            }
+
+            return undone.ToArray();
         }
 
         private PendingChange[] GetPendingChangesOfTypeAdd()
