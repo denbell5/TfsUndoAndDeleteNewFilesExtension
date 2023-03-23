@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="TfsUndoAndDeleteNewFilesExtension.dc12e21c-f5a9-4d77-b5f7-4d8642858c42" Version="1.1" Language="en-US" Publisher="Denys Belik" />
+        <Identity Id="TfsUndoAndDeleteNewFilesExtension.dc12e21c-f5a9-4d77-b5f7-4d8642858c42" Version="1.2" Language="en-US" Publisher="Denys Belik" />
         <DisplayName>TfsUndoAndDeleteNewFilesExtension</DisplayName>
         <Description xml:space="preserve">Visual Studio extension that performs undo of pending changes and deletes new (added) files
-Visual Studio extension that performs undo of pending changes and deletes new (added) files
 </Description>
         <Icon>Resources\Icon.png</Icon>
         <PreviewImage>Resources\Icon.png</PreviewImage>
