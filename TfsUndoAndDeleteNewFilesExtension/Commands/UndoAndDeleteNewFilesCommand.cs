@@ -21,6 +21,20 @@ namespace TfsUndoAndDeleteNewFilesExtension
 
             await LogAsync($"Executing {this.GetType().Name} [{DateTime.Now}]");
 
+            bool anyPendingChanges =
+                _versionControlExtension.PendingChanges.IncludedChanges.Any() ||
+                _versionControlExtension.PendingChanges.ExcludedChanges.Any();
+
+            if (!anyPendingChanges)
+            {
+                await LogAsync("No pending changes detected by the extension. " +
+                    "Mostly like this is a known bug. " +
+                    "Please restart Visual Studio or switch to another Visual Studio instance if several are opened. " +
+                    "Sorry for the inconvenience.");
+
+                return;
+            }
+
             var pendingChangesBefore = GetPendingChangesOfTypeAdd();
             await LogAsync($"Found {pendingChangesBefore.Length} 'adds' before undo");
 
@@ -38,7 +52,7 @@ namespace TfsUndoAndDeleteNewFilesExtension
 
             var pendingChangesAfter = GetPendingChangesOfTypeAdd();
             await LogAsync($"Found {pendingChangesAfter.Length} 'adds' after undo");
-
+            
             var undoneChanges = ResolveUndoneChanges(pendingChangesBefore, pendingChangesAfter);
             await LogAsync($"Found {undoneChanges.Length} undone 'adds'");
 
