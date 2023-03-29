@@ -12,7 +12,7 @@ namespace TfsUndoAndDeleteNewFilesExtension
         public const string Description = @"Visual Studio extension that performs undo of pending changes and deletes new (added) files
 ";
         public const string Language = "en-US";
-        public const string Version = "1.2";
+        public const string Version = "1.3";
         public const string Author = "Denys Belik";
         public const string Tags = "";
     }
