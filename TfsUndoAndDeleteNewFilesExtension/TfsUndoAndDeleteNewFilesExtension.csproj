@@ -45,8 +45,21 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="CmdManagement\CmdExecutableNotFoundException.cs" />
+    <Compile Include="CmdManagement\CmdExecutionException.cs" />
+    <Compile Include="CmdManagement\CmdExecutor.cs" />
+    <Compile Include="CmdManagement\CmdResult.cs" />
+    <Compile Include="CmdManagement\ICmdExecutor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Commands\UndoAndDeleteNewFilesCommand.cs" />
+    <Compile Include="TfsClientManagement\ITfsClient.cs" />
+    <Compile Include="TfsClientManagement\Parsing\ChangeTypeParser.cs" />
+    <Compile Include="TfsClientManagement\Parsing\IPropertyParser.cs" />
+    <Compile Include="TfsClientManagement\Parsing\LocalFullPathParser.cs" />
+    <Compile Include="TfsClientManagement\PendingChangeDto.cs" />
+    <Compile Include="TfsClientManagement\Parsing\TfStatusResultParser.cs" />
+    <Compile Include="TfsClientManagement\StatusResult.cs" />
+    <Compile Include="TfsClientManagement\TfsClient.cs" />
     <Compile Include="TfsUndoAndDeleteNewFilesExtensionPackage.cs" />
     <Compile Include="source.extension.cs">
       <AutoGen>True</AutoGen>

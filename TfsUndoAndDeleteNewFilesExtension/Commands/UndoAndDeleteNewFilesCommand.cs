@@ -5,68 +5,63 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using TfsUndoAndDeleteNewFilesExtension.TfsClientManagement;
 
 namespace TfsUndoAndDeleteNewFilesExtension
 {
     [Command(PackageIds.UndoAndDeleteNewFilesCommand)]
     internal sealed class UndoAndDeleteNewFilesCommand : BaseCommand<UndoAndDeleteNewFilesCommand>
     {
-        private VersionControlExt _versionControlExtension;
         private OutputWindowPane _outputWindowPane;
+        private ITfsClient _tfsClient;
 
         protected override async Task ExecuteAsync(OleMenuCmdEventArgs e)
         {
             await InitOutputWindowPaneAsync();
-            await InitVersionControlExtAsync();
-
-            await LogAsync($"Executing {this.GetType().Name} [{DateTime.Now}]");
-
-            bool anyPendingChanges =
-                _versionControlExtension.PendingChanges.IncludedChanges.Any() ||
-                _versionControlExtension.PendingChanges.ExcludedChanges.Any();
-
-            if (!anyPendingChanges)
+            try
             {
-                await LogAsync("No pending changes detected by the extension. " +
-                    "Mostly like this is a known bug. " +
-                    "Please restart Visual Studio or switch to another Visual Studio instance if several are opened. " +
-                    "Sorry for the inconvenience.");
+                InitTfsClient();
 
-                return;
-            }
+                await LogAsync($"Executing {this.GetType().Name} [{DateTime.Now}]");
 
-            var pendingChangesBefore = GetPendingChangesOfTypeAdd();
-            await LogAsync($"Found {pendingChangesBefore.Length} 'adds' before undo");
+                var pendingChangesBefore = GetPendingChangesOfTypeAdd();
+                await LogAsync($"Found {pendingChangesBefore.Length} 'adds' before undo");
 
-            string commandName = "TeamFoundationContextMenus.PendingChangesPageChangestoInclude.TfsContextPendingChangesPageUndo";
-            await LogAsync($"Executing {commandName}");
-            var executed = await VS.Commands.ExecuteAsync(commandName);
+                string commandName = "TeamFoundationContextMenus.PendingChangesPageChangestoInclude.TfsContextPendingChangesPageUndo";
+                await LogAsync($"Executing {commandName}");
+                var executed = await VS.Commands.ExecuteAsync(commandName);
 
-            if (!executed)
-            {
-                await LogAsync($"Execution failed, aborting");
-                return;
-            }
-            else
-                await LogAsync($"Execution succeeded");
-
-            var pendingChangesAfter = GetPendingChangesOfTypeAdd();
-            await LogAsync($"Found {pendingChangesAfter.Length} 'adds' after undo");
-            
-            var undoneChanges = ResolveUndoneChanges(pendingChangesBefore, pendingChangesAfter);
-            await LogAsync($"Found {undoneChanges.Length} undone 'adds'");
-
-            foreach (var pendingChange in undoneChanges)
-            {
-                if (File.Exists(pendingChange.LocalItem))
+                if (!executed)
                 {
-                    await LogAsync($"Deleting file {pendingChange.LocalItem}");
-                    File.Delete(pendingChange.LocalItem);
+                    await LogAsync($"Execution failed, aborting");
+                    return;
                 }
                 else
+                    await LogAsync($"Execution succeeded");
+
+                var pendingChangesAfter = GetPendingChangesOfTypeAdd();
+                await LogAsync($"Found {pendingChangesAfter.Length} 'adds' after undo");
+
+                var undoneChanges = ResolveUndoneChanges(pendingChangesBefore, pendingChangesAfter);
+                await LogAsync($"Found {undoneChanges.Length} undone 'adds'");
+
+                foreach (var pendingChange in undoneChanges)
                 {
-                    await LogAsync($"File {pendingChange.LocalItem} not found, skipping deletion");
+                    if (File.Exists(pendingChange.LocalFullPath))
+                    {
+                        await LogAsync($"Deleting file {pendingChange.LocalFullPath}");
+                        File.Delete(pendingChange.LocalFullPath);
+                    }
+                    else
+                    {
+                        await LogAsync($"File {pendingChange.LocalFullPath} not found, skipping deletion");
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                await LogAsync($"Exception occured during execution of {this.GetType().Name}:" +
+                    $"{Environment.NewLine}{ex}");
             }
         }
 
@@ -98,23 +93,18 @@ namespace TfsUndoAndDeleteNewFilesExtension
             }
             await _outputWindowPane.ActivateAsync();
         }
-
-        private async Task InitVersionControlExtAsync()
+        private void InitTfsClient()
         {
-            // Warning VSTHRD010
-            // Accessing "DTE" should only be done on the main thread. Await JoinableTaskFactory.SwitchToMainThreadAsync() first
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-            EnvDTE.DTE dte = Microsoft.VisualStudio.Shell.Package.GetGlobalService(typeof(EnvDTE.DTE)) as EnvDTE.DTE;
-            _versionControlExtension = dte.GetObject(typeof(VersionControlExt).FullName) as VersionControlExt;
+            _tfsClient ??= new TfsClient();
         }
 
-        private PendingChange[] ResolveUndoneChanges(PendingChange[] before, PendingChange[] after)
+        private PendingChangeDto[] ResolveUndoneChanges(PendingChangeDto[] before, PendingChangeDto[] after)
         {
-            var undone = new List<PendingChange>();
+            var undone = new List<PendingChangeDto>();
 
             foreach (var change in before)
             {
-                if (!after.Any(x => x.LocalItem == change.LocalItem))
+                if (!after.Any(x => x.LocalFullPath == change.LocalFullPath))
                 {
                     undone.Add(change);
                 }
@@ -123,12 +113,11 @@ namespace TfsUndoAndDeleteNewFilesExtension
             return undone.ToArray();
         }
 
-        private PendingChange[] GetPendingChangesOfTypeAdd()
+        private PendingChangeDto[] GetPendingChangesOfTypeAdd()
         {
-            return _versionControlExtension.PendingChanges.IncludedChanges
+            TfStatusResult result = _tfsClient.ExecuteStatus();
+            return result.PendingChanges
                 .Where(x => x.ChangeType.HasFlag(ChangeType.Add))
-                .Concat(_versionControlExtension.PendingChanges.ExcludedChanges
-                    .Where(x => x.ChangeType.HasFlag(ChangeType.Add)))
                 .ToArray();
         }
     }
